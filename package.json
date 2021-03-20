@@ -10,17 +10,9 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:php-code-folding.helloWorld"
+    "onLanguage:php"
   ],
   "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "php-code-folding.helloWorld",
-        "title": "Hello World"
-      }
-    ]
-  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
