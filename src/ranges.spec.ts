@@ -1,6 +1,11 @@
 import * as assert from "assert";
 import { getRanges } from './ranges';
 
+function assertRanges(lines: string[], expected: object[]): void {
+  const actual = getRanges(lines.length, i => lines[i]);
+  assert.deepStrictEqual(actual, expected);
+}
+
 describe('Ranges', function () {
   describe('#getRanges()', function () {
     const tests = [
@@ -185,14 +190,81 @@ try {
         ],
       },
 
+      {
+        name: 'closing brace in a single-quoted string',
+        text: `
+{
+    $a = '}';
+}
+`,
+        want: [
+          { start: 1, end: 3 },
+        ],
+      },
+
+      {
+        name: 'closing brace in a double-quoted string',
+        text: `
+{
+    $a = "}";
+}
+`,
+        want: [
+          { start: 1, end: 3 },
+        ],
+      },
+
+      {
+        name: 'closing brace in a single-quoted string, followed by double-quote',
+        text: `
+{
+    $a = '
+        }"{"
+    ';
+}
+`,
+        want: [
+          { start: 2, end: 4 },
+          { start: 1, end: 5 },
+        ],
+      },
+
     ];
 
     tests.forEach(tt => {
-      it(tt.name, () => {
+      it(tt.name, function () {
         const lines = tt.text.split('\n');
         const got = getRanges(lines.length, i => lines[i]);
         assert.deepStrictEqual(got, tt.want);
       });
     });
+
+    it('string quote escape', function () {
+      const lines = [
+        /* 0 */ "{",
+        /* 1 */ "    $a = '",
+        /* 2 */ "        \\'}",
+        /* 3 */ "    ';",
+        /* 4 */ "}",
+      ];
+      const expected = [
+        { start: 1, end: 3 },
+        { start: 0, end: 4 },
+      ];
+      assertRanges(lines, expected);
+    });
+
+    it('double slash in string', function () {
+      const lines = [
+        /* 0 */ "{",
+        /* 1 */ '    $a = "//";',
+        /* 2 */ "}",
+      ];
+      const expected = [
+        { start: 0, end: 2 },
+      ];
+      assertRanges(lines, expected);
+    });
+
   });
 });
