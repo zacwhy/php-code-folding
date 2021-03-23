@@ -3,6 +3,11 @@
   "displayName": "PHP Code Folding",
   "description": "",
   "version": "0.0.1",
+  "publisher": "zacwhy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zacwhy/php-code-folding"
+  },
   "engines": {
     "vscode": "^1.54.0"
   },
